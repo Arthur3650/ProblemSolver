@@ -1,0 +1,31 @@
+# Chiavi segrete (MAI caricare su GitHub!)
+.env
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Cartelle temporanee
+backend/uploads/*
+backend/outputs/*
+!backend/uploads/.gitkeep
+!backend/outputs/.gitkeep
+
+# Statistiche locali (si rigenera da sola)
+backend/stats.json
+
+# Ambienti virtuali
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+Thumbs.db
+.DS_Store

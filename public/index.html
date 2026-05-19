@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Solver | Servizi Rapidi e Automatici</title>
+    <meta name="description" content="25 micro-servizi automatici per risolvere i tuoi problemi digitali: foto, PDF, documenti e molto altro.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="Problem Solver Logo" class="logo-img">
+            <h1>Problem <span>Solver</span></h1>
+        </div>
+        <nav>
+            <a href="#services">I Servizi</a>
+            <a href="#how-it-works">Come Funziona</a>
+            <a href="#contact" class="btn-primary">Inizia Ora</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Risolviamo i tuoi problemi digitali in <span class="highlight">3 click.</span></h2>
+                <p>Nessuna attesa, nessun supporto clienti. Carica il file, il sistema lo elabora, e tu scarichi il risultato.</p>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Cosa ti serve oggi? (es. Foto, PDF, CV...)">
+                    <button id="searchBtn">Cerca</button>
+                </div>
+            </div>
+            <div class="hero-glow"></div>
+        </section>
+
+        <section id="services" class="services-section">
+            <div class="section-header">
+                <h3>I Nostri 25 Servizi</h3>
+                <p>Scegli il servizio di cui hai bisogno e lascia fare all'automazione globale.</p>
+            </div>
+            <div class="services-grid" id="servicesGrid">
+                <!-- Servizi iniettati via JS -->
+            </div>
+        </section>
+        
+        <section id="how-it-works" class="how-it-works">
+            <h3>Come Funziona</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">1</div>
+                    <h4>Scegli il Servizio</h4>
+                    <p>Seleziona quello che ti serve tra i nostri 25 tool globali.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">2</div>
+                    <h4>Carica i Dati</h4>
+                    <p>Fornisci il file o le info richieste.</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <h4>Ottieni il Risultato</h4>
+                    <p>Elaborazione istantanea, paghi solo se soddisfatto e scarichi in 1 secondo.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 Problem Solver. Tutti i diritti riservati.</p>
+            <p><a href="legal.html" style="color: var(--text-muted); text-decoration: none;">Termini e Privacy Policy</a> | 100% Automatico.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

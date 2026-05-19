@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin | Problem Solver</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 20px; font-family: 'Inter', sans-serif; background: #0d0e15; color: white; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        h1 { color: #4cc9f0; text-align: center; }
+        h3 { margin-top: 0; color: #adb5bd; font-size: 14px; text-transform: uppercase; }
+        .value { font-size: 36px; font-weight: 800; }
+        .euro { color: #00d084; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        th { color: #adb5bd; }
+        .badge { background: #00d084; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Finanziaria (Privata)</h1>
+    <div class="grid">
+        <div class="card">
+            <h3>Visite al Sito</h3>
+            <div class="value" id="visits">...</div>
+        </div>
+        <div class="card">
+            <h3>File Elaborati dall'IA</h3>
+            <div class="value" id="uploads">...</div>
+        </div>
+        <div class="card">
+            <h3>Guadagni in Arrivo (Prox. Bonifico)</h3>
+            <div class="value euro" id="pending">... €</div>
+        </div>
+        <div class="card">
+            <h3>Guadagni già Bonificati</h3>
+            <div class="value euro" id="available">... €</div>
+        </div>
+    </div>
+    
+    <h2 style="margin-top: 40px; color: #4cc9f0;">Ultime Vendite da Stripe</h2>
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Transazione</th>
+                    <th>Importo</th>
+                    <th>Stato</th>
+                </tr>
+            </thead>
+            <tbody id="salesTable">
+                <tr><td colspan="3">Caricamento in corso (connessione a Stripe)...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                
+                document.getElementById('visits').innerText = data.visits || 0;
+                document.getElementById('uploads').innerText = data.uploads || 0;
+                document.getElementById('pending').innerText = data.stripe_pending ? data.stripe_pending.toFixed(2) : '0.00';
+                document.getElementById('available').innerText = data.stripe_available ? data.stripe_available.toFixed(2) : '0.00';
+                
+                const table = document.getElementById('salesTable');
+                table.innerHTML = '';
+                if(data.recent_sales && data.recent_sales.length > 0) {
+                    data.recent_sales.forEach(sale => {
+                        table.innerHTML += `
+                            <tr>
+                                <td style="font-family: monospace; color: #adb5bd;">${sale.id}</td>
+                                <td class="euro"><strong>+${sale.amount.toFixed(2)} €</strong></td>
+                                <td><span class="badge">PAGATO ✓</span></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    table.innerHTML = '<tr><td colspan="3">Nessuna vendita ancora registrata.</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+        loadStats();
+        setInterval(loadStats, 10000); // Aggiorna ogni 10 secondi in tempo reale
+    </script>
+</body>
+</html>

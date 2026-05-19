@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servizio | Problem Solver</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="Problem Solver Logo" class="logo-img">
+            <h1>Problem <span>Solver</span></h1>
+        </div>
+        <nav>
+            <a href="index.html" class="btn-primary" style="background: transparent; border: 1px solid var(--card-border); box-shadow: none;">← Torna Indietro</a>
+        </nav>
+    </header>
+
+    <main class="service-main">
+        <div class="service-hero">
+            <div class="service-icon-large" id="serviceIcon">⚙️</div>
+            <h2 id="serviceTitle">Caricamento...</h2>
+            <p id="serviceDesc">Preparo l'ambiente di lavoro.</p>
+        </div>
+
+        <div class="upload-container" id="uploadArea">
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-icon">📥</div>
+                <h3>Trascina il tuo file o clicca qui</h3>
+                <p>Carica il documento, la foto o il file da elaborare.</p>
+                <input type="file" id="fileInput" hidden>
+                <div class="supported-formats">Massima privacy garantita per i tuoi documenti.</div>
+            </div>
+            <div class="privacy-note">
+                🔒 I tuoi dati non vengono condivisi con nessuno e si autodistruggono dopo l'elaborazione.
+            </div>
+        </div>
+
+        <div class="processing-container" id="processingArea" style="display: none;">
+            <div class="spinner"></div>
+            <h3 id="progressText">Elaborazione in corso... 0%</h3>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <p>L'Intelligenza Artificiale sta elaborando il tuo file. Attendi qualche istante.</p>
+        </div>
+
+        <div class="result-container" id="resultArea" style="display: none;">
+            <div class="success-icon">✅</div>
+            <h3>Elaborazione Completata con Successo!</h3>
+            <p>Il tuo risultato è pronto per il download. Paga in modo sicuro con Stripe e scarica subito.</p>
+            
+            <div class="checkout-box">
+                <div class="price">2,99 €</div>
+                <button id="downloadBtn" class="btn-primary btn-large stripe-btn">
+                    🔒 Paga 2,99 € e Scarica
+                </button>
+                <div class="stripe-badge">Pagamenti crittografati gestiti da Stripe.com</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content" style="padding: 30px 5%; border-top: 1px solid var(--card-border); text-align: center; color: var(--text-muted); font-size: 0.9rem; display: flex; justify-content: space-between;">
+            <p>&copy; 2026 Problem Solver.</p>
+            <p><a href="legal.html" style="color: var(--text-muted); text-decoration: none;">Termini e Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
