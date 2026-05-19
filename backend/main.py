@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 from services.image_handler import (
     process_passport_photo, censor_photo, restore_old_photo,
     enhance_real_estate, remove_background, upscale_image,
-    social_resize, compress_image, grayscale_photo, adjust_brightness
+    social_resize, compress_image, grayscale_photo, adjust_brightness,
+    convert_to_webp, convert_to_png, strip_exif
 )
 from services.pdf_handler import process_pdf
 from services.doc_generator import generate_document_kit
@@ -127,6 +128,12 @@ async def process_file(service_id: int, file: UploadFile = File(None), nome: str
             output_path = grayscale_photo(input_path, OUTPUT_DIR, file_id)
         elif service_id == 28:
             output_path = adjust_brightness(input_path, OUTPUT_DIR, file_id)
+        elif service_id == 29:
+            output_path = convert_to_webp(input_path, OUTPUT_DIR, file_id)
+        elif service_id == 30:
+            output_path = convert_to_png(input_path, OUTPUT_DIR, file_id)
+        elif service_id == 31:
+            output_path = strip_exif(input_path, OUTPUT_DIR, file_id)
         elif service_id == 3:
             output_path = process_pdf(input_path, OUTPUT_DIR, file_id)
         elif service_id in DOC_TOOLS:

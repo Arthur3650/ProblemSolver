@@ -185,3 +185,27 @@ def adjust_brightness(input_path, output_dir, file_id):
     out = os.path.join(output_dir, f"{file_id}_regolata.jpg")
     cv2.imwrite(out, bright)
     return out
+
+def convert_to_webp(input_path, output_dir, file_id):
+    img = Image.open(input_path)
+    out = os.path.join(output_dir, f"{file_id}_convertita.webp")
+    img.save(out, "WEBP", quality=85)
+    return out
+
+def convert_to_png(input_path, output_dir, file_id):
+    img = Image.open(input_path)
+    out = os.path.join(output_dir, f"{file_id}_convertita.png")
+    img.save(out, "PNG")
+    return out
+
+def strip_exif(input_path, output_dir, file_id):
+    img = Image.open(input_path)
+    data = list(img.getdata())
+    img_no_exif = Image.new(img.mode, img.size)
+    img_no_exif.putdata(data)
+    ext = os.path.splitext(input_path)[1].lower()
+    out = os.path.join(output_dir, f"{file_id}_pulita{ext if ext in ('.jpg','.jpeg','.png') else '.jpg'}")
+    if img_no_exif.mode in ("RGBA", "P"):
+        img_no_exif = img_no_exif.convert("RGB")
+    img_no_exif.save(out, quality=95)
+    return out

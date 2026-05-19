@@ -23,7 +23,10 @@ const services = [
     { id: 25, title: "Adatta per Social", desc: "Ridimensiona e adatta foto per formati social (Instagram, TikTok, YouTube).", icon: "📱" },
     { id: 26, title: "Comprimi Foto", desc: "Riduce il peso delle foto JPEG/PNG mantenendo una qualità accettabile.", icon: "🗜️" },
     { id: 27, title: "Bianco e Nero", desc: "Converte le foto a colori in bianco e nero.", icon: "⚫" },
-    { id: 28, title: "Luminosità", desc: "Regola luminosità e contrasto delle foto automaticamente.", icon: "☀️" }
+    { id: 28, title: "Luminosità", desc: "Regola luminosità e contrasto delle foto automaticamente.", icon: "☀️" },
+    { id: 29, title: "Converti in WebP", desc: "Converte le tue foto JPG/PNG nel formato WebP moderno, più leggero e veloce per il web.", icon: "🖼️" },
+    { id: 30, title: "Converti in PNG", desc: "Converte le tue foto JPG/WebP in PNG con trasparenza, ideale per grafica e loghi.", icon: "🖼️" },
+    { id: 31, title: "Rimuovi Metadati", desc: "Elimina tutti i metadati nascosti dalle foto (posizione GPS, data, modello fotocamera, EXIF) per massima privacy.", icon: "🔒" }
 ];
 
 // Track visit
