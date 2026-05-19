@@ -8,6 +8,7 @@ import uuid
 import shutil
 import stripe
 import json
+import hashlib
 import secrets
 from dotenv import load_dotenv
 from services.image_handler import (
@@ -24,7 +25,15 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 DOMAIN = os.getenv("SITE_DOMAIN", "http://localhost:8000")
 ADMIN_USER = os.getenv("ADMIN_USERNAME", "admin")
-ADMIN_PASS = os.getenv("ADMIN_PASSWORD", "ProblemSolver2026!")
+ADMIN_PASS_HASH = os.getenv("ADMIN_PASSWORD_HASH", "")
+
+def verify_password(plain_password, stored_hash):
+    try:
+        salt, expected_hash = stored_hash.split(":")
+        actual_hash = hashlib.pbkdf2_hmac("sha256", plain_password.encode(), salt.encode(), 100000).hex()
+        return actual_hash == expected_hash
+    except Exception:
+        return False
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 STATS_FILE = os.path.join(os.path.dirname(__file__), "stats.json")
@@ -49,12 +58,8 @@ async def cleanup_old_files():
 security = HTTPBasic()
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    current_username_bytes = credentials.username.encode("utf8")
-    correct_username_bytes = ADMIN_USER.encode("utf8")
-    is_correct_username = secrets.compare_digest(current_username_bytes, correct_username_bytes)
-    current_password_bytes = credentials.password.encode("utf8")
-    correct_password_bytes = ADMIN_PASS.encode("utf8")
-    is_correct_password = secrets.compare_digest(current_password_bytes, correct_password_bytes)
+    is_correct_username = secrets.compare_digest(credentials.username.encode("utf8"), ADMIN_USER.encode("utf8"))
+    is_correct_password = verify_password(credentials.password, ADMIN_PASS_HASH)
     if not (is_correct_username and is_correct_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
