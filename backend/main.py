@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from services.image_handler import (
     process_passport_photo, censor_photo, restore_old_photo,
     enhance_real_estate, remove_background, upscale_image,
-    colorize_photo, social_resize
+    social_resize
 )
 from services.pdf_handler import process_pdf
 from services.doc_generator import generate_document_kit
@@ -33,7 +33,18 @@ def init_stats():
             json.dump({"visits": 0, "uploads": 0, "shares": 0}, f)
 init_stats()
 
-app = FastAPI(title="Problem Solver API - 25 Tools")
+app = FastAPI(title="Problem Solver API")
+
+@app.on_event("startup")
+async def cleanup_old_files():
+    import time
+    now = time.time()
+    for d in [UPLOAD_DIR, OUTPUT_DIR]:
+        for f in os.listdir(d):
+            path = os.path.join(d, f)
+            if os.path.isfile(path) and f != ".gitkeep" and now - os.path.getmtime(path) > 86400:
+                try: os.remove(path)
+                except: pass
 security = HTTPBasic()
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
@@ -107,7 +118,7 @@ async def process_file(service_id: int, file: UploadFile = File(None)):
         elif service_id == 23:
             output_path = upscale_image(input_path, OUTPUT_DIR, file_id)
         elif service_id == 24:
-            output_path = colorize_photo(input_path, OUTPUT_DIR, file_id)
+            return {"status": "error", "message": "Servizio non più disponibile."}
         elif service_id == 25:
             output_path = social_resize(input_path, OUTPUT_DIR, file_id)
         elif service_id == 3:
@@ -116,9 +127,7 @@ async def process_file(service_id: int, file: UploadFile = File(None)):
             mock_data = {"nome": "Cliente Internazionale", "professione": "Manager"}
             output_path = generate_document_kit(service_id, mock_data, OUTPUT_DIR, file_id)
         elif service_id in [13, 14]:
-            output_path = os.path.join(OUTPUT_DIR, f"{file_id}_media_elaborato{ext}")
-            if input_path:
-                shutil.copy(input_path, output_path)
+            return {"status": "error", "message": "Servizio audio/video non ancora disponibile. In arrivo gratis per tutti."}
         else:
             output_path = os.path.join(OUTPUT_DIR, f"{file_id}_elaborato{ext}")
             if input_path:

@@ -147,33 +147,18 @@ def upscale_image(input_path, output_dir, file_id):
     return out
 
 
-def colorize_photo(input_path, output_dir, file_id):
-    img = cv2.imread(input_path)
-    if img is None:
-        return input_path
-
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray_rgb = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-
-    lab = cv2.cvtColor(gray_rgb, cv2.COLOR_BGR2LAB)
-    l, a, b = cv2.split(lab)
-
-    a = cv2.add(a, 40)
-    b = cv2.subtract(b, 30)
-
-    lab = cv2.merge([l, a, b])
-    colorized = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
-    colorized = cv2.normalize(colorized, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
-
-    out = os.path.join(output_dir, f"{file_id}_colorized.jpg")
-    cv2.imwrite(out, colorized)
-    return out
-
-
 def social_resize(input_path, output_dir, file_id):
     img = Image.open(input_path)
-    target_size = (1080, 1920)
-    img = ImageOps.pad(img, target_size, color="#0d0e15")
+    sizes = {
+        "instagram": (1080, 1080),
+        "tiktok": (1080, 1920),
+        "youtube": (1920, 1080)
+    }
+    base, ext = os.path.splitext(os.path.basename(input_path)) if input_path else ("output", ".jpg")
+    for platform, size in sizes.items():
+        resized = ImageOps.pad(img, size, color="#0d0e15")
+        path = os.path.join(output_dir, f"{file_id}_{platform}.jpg")
+        resized.convert("RGB").save(path, quality=90)
     out = os.path.join(output_dir, f"{file_id}_social.jpg")
-    img.convert("RGB").save(out, quality=90)
+    ImageOps.pad(img, (1080, 1080), color="#0d0e15").convert("RGB").save(out, quality=90)
     return out

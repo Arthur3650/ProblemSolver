@@ -4,80 +4,356 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 
 def generate_document_kit(tool_id: int, data: dict, output_dir: str, file_id: str):
-    """
-    Unico motore per tutti i documenti (Tool 4, 5, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21).
-    Usa template dinamici basati sull'ID richiesto.
-    """
     titles = {
         4: "Curriculum Vitae",
-        5: "Kit Concorso - Documentazione Ufficiale",
-        8: "Lettera Ufficiale / Diffida",
-        9: "Kit Viaggio - Itinerario e Modulistica",
-        10: "Kit Lavoro - Richieste Formali",
-        11: "Kit Bonus - Autocertificazione",
-        12: "Modulistica PA Standard",
+        5: "Domanda di Partecipazione a Concorso",
+        8: "Lettera Formale / Diffida",
+        9: "Documenti per Viaggio",
+        10: "Documenti per Lavoro",
+        11: "Autocertificazione per Bonus",
+        12: "Modulistica Pubblica Amministrazione",
         15: "Portfolio Professionale",
         16: "Dossier Personale",
-        17: "Kit Emergenza - Dichiarazioni URGENTI",
-        18: "Kit Matrimonio - Checklist e Moduli Civili",
-        19: "Kit Nascita - Documentazione Pratiche",
-        20: "Kit Separazione - Accordi Preliminari",
-        21: "Modulo Precompilato"
+        17: "Dichiarazione Urgente",
+        18: "Documenti per Matrimonio",
+        19: "Documenti per Nascita",
+        20: "Accordi Preliminari di Separazione",
+        21: "Modulo PA Precompilato"
     }
-    
-    doc_title = titles.get(tool_id, "Documento Generato IA")
-    output_path = os.path.join(output_dir, f"{file_id}_{doc_title.replace(' ', '_').replace('/', '')}.pdf")
-    
+
+    doc_title = titles.get(tool_id, "Documento Generato")
+    safe_title = doc_title.replace(" ", "_").replace("/", "")
+    output_path = os.path.join(output_dir, f"{file_id}_{safe_title}.pdf")
+
     c = canvas.Canvas(output_path, pagesize=A4)
     width, height = A4
 
-    # Header Universale Premium
     c.setFillColor(colors.HexColor("#0d0e15"))
     c.rect(0, height - 100, width, 100, fill=1, stroke=0)
-    
     c.setFillColor(colors.white)
     c.setFont("Helvetica-Bold", 18)
     c.drawString(40, height - 40, doc_title.upper())
     c.setFont("Helvetica", 10)
     c.setFillColor(colors.HexColor("#4cc9f0"))
-    c.drawString(40, height - 60, f"Pratica Autenticata | ID: {file_id.split('-')[0].upper()} | Valore Legale")
+    c.drawString(40, height - 60, f"Documento generato automaticamente | ID: {file_id.split('-')[0].upper()}")
 
-    # Corpo centrale
     c.setFillColor(colors.black)
-    c.setFont("Helvetica", 12)
+    c.setFont("Helvetica", 11)
     y = height - 140
-    
-    # Intestazione formale
-    testo = [
-        f"Con la presente, in riferimento alla pratica '{doc_title}',",
-        "si produce e certifica la documentazione automatizzata in base alle",
-        "informazioni fornite dall'utente. Il presente documento è formattato",
-        "secondo gli standard burocratici vigenti.",
-        "",
-        f"Dati Richiedente: {data.get('nome', 'Cliente Problem Solver')}",
-        f"Data di Generazione: 2026",
-        "==================================================",
-        "",
-        "DICHIARAZIONI E CONTENUTI:"
-    ]
-    
-    # Sezioni specifiche basate sul Tool
-    if tool_id == 8: # Lettera
-        testo.extend(["Oggetto: Richiesta Formale / Diffida Legale", "", "Si intima alla controparte di provvedere a..."])
-    elif tool_id == 20: # Separazione
-        testo.extend(["Oggetto: Accordo Preliminare di Separazione Consensuale", "", "I coniugi dichiarano di voler procedere..."])
-    elif tool_id == 4: # CV
-        testo = ["CURRICULUM VITAE", "", f"Profilo: {data.get('professione', 'Professionista')}", "Esperienze pregresse: Ottime."]
+    margin = 40
+    line_height = 18
 
-    for line in testo:
-        c.drawString(40, y, line)
-        y -= 20
+    def write_line(text, bold=False):
+        nonlocal y
+        if y < 60:
+            c.showPage()
+            y = height - 60
+        c.setFont("Helvetica-Bold" if bold else "Helvetica", 11)
+        c.drawString(margin, y, text)
+        y -= line_height + 2
 
-    # Piè di pagina e Firma
-    c.setLineWidth(0.5)
-    c.line(40, y - 40, width - 40, y - 40)
-    c.setFont("Helvetica-Oblique", 10)
-    c.drawString(40, y - 60, "Firmato digitalmente / Da firmare in originale: _______________________")
-    
+    nome = data.get("nome", "Il sottoscritto")
+    professione = data.get("professione", "professionista")
+
+    if tool_id == 4:
+        write_line("DATI ANAGRAFICI", bold=True)
+        write_line(f"Nome e Cognome: {nome}")
+        write_line(f"Professione: {professione}")
+        write_line("")
+        write_line("ESPERIENZE PROFESSIONALI", bold=True)
+        write_line("• 2022 - oggi: Ruolo presso azienda del settore")
+        write_line("• 2019 - 2022: Posizione precedente con crescita di responsabilità")
+        write_line("• 2016 - 2019: Prima esperienza nel settore")
+        write_line("")
+        write_line("FORMAZIONE", bold=True)
+        write_line("• Laurea specialistica / diploma di secondo grado")
+        write_line("• Corsi di aggiornamento e certificazioni professionali")
+        write_line("")
+        write_line("COMPETENZE", bold=True)
+        write_line("• Ottima capacità di organizzazione e problem solving")
+        write_line("• Esperienza nella gestione di progetti e team")
+        write_line("• Conoscenza degli strumenti informatici principali")
+
+    elif tool_id == 5:
+        write_line("OGGETTO: Domanda di partecipazione a concorso pubblico", bold=True)
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}, nato/a a __________ il __________,")
+        write_line("residente in __________, via __________ n. ___, CAP ______,")
+        write_line("codice fiscale ____________________,")
+        write_line("")
+        write_line("CHIEDE", bold=True)
+        write_line("di essere ammesso/a al concorso pubblico indetto da ____________________")
+        write_line("per il profilo professionale di ____________________.")
+        write_line("")
+        write_line("DICHIARA", bold=True)
+        write_line("• di possedere i requisiti generali e specifici richiesti dal bando")
+        write_line("• di non aver riportato condanne penali")
+        write_line("• di essere cittadino/a italiano/a o comunitario/a")
+        write_line("• di godere dei diritti civili e politici")
+        write_line("")
+        write_line("Allega alla presente: fotocopia documento d'identità, curriculum vitae,")
+        write_line("titoli di studio e ogni altra documentazione richiesta dal bando.")
+
+    elif tool_id == 8:
+        write_line("OGGETTO: Diffida / Richiesta Formale", bold=True)
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}, {professione},")
+        write_line("con domicilio eletto in __________, via __________ n. ___,")
+        write_line("")
+        write_line("PREMESSO", bold=True)
+        write_line("che in data __________ si è verificato quanto segue: __________________")
+        write_line("che nonostante i solleciti, la controparte non ha provveduto a __________")
+        write_line("")
+        write_line("DIFFIDA", bold=True)
+        write_line("la controparte a provvedere a ____________________ entro e non oltre")
+        write_line("il giorno __________, pena l'adozione di ogni più opportuna iniziativa")
+        write_line("giudiziaria a tutela dei propri diritti.")
+        write_line("")
+        write_line("Si fa presente che in caso di inadempienza si procederà per le vie legali.")
+
+    elif tool_id == 9:
+        write_line("DOCUMENTI DI VIAGGIO - CHECKLIST", bold=True)
+        write_line("")
+        write_line("VIAGGIO A: ____________________", bold=True)
+        write_line("DAL: __________________ AL: __________________")
+        write_line("")
+        write_line("DOCUMENTI RICHIESTI", bold=True)
+        write_line("[ ] Passaporto valido (scadenza > 6 mesi dalla data di rientro)")
+        write_line("[ ] Visto (se necessario per la destinazione)")
+        write_line("[ ] Carta d'identità valida")
+        write_line("[ ] Patente di guida internazionale")
+        write_line("[ ] Tessera sanitaria / Assicurazione medica di viaggio")
+        write_line("")
+        write_line("PRENOTAZIONI", bold=True)
+        write_line("[ ] Volo / Traghetto / Treno: ____________________")
+        write_line("[ ] Alloggio: ____________________")
+        write_line("[ ] Transfert aeroportuale: ____________________")
+        write_line("")
+        write_line("IMPORTANTE: Verificare le eventuali restrizioni di ingresso")
+        write_line("e le normative sanitarie vigenti nel paese di destinazione.")
+
+    elif tool_id == 10:
+        write_line("OGGETTO: Richiesta / Comunicazione Lavorativa", bold=True)
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}, {professione},")
+        write_line("")
+        write_line("COMUNICA", bold=True)
+        write_line("quanto segue in merito al proprio rapporto di lavoro:")
+        write_line("")
+        write_line("[ ] Richiesta ferie dal __________ al __________")
+        write_line("[ ] Richiesta permesso per il giorno __________")
+        write_line("[ ] Comunicazione dimissioni volontarie decorrenti dal __________")
+        write_line("[ ] Richiesta part-time / cambio mansione")
+        write_line("[ ] Autocertificazione malattia")
+        write_line("")
+        write_line("Motivazione: __________________________________________________")
+        write_line("")
+        write_line("Il lavoratore dichiara di aver preso visione del regolamento aziendale")
+        write_line("e di quanto previsto dal CCNL di riferimento.")
+
+    elif tool_id == 11:
+        write_line("AUTOCERTIFICAZIONE PER RICHIESTA BONUS", bold=True)
+        write_line("(Ai sensi del D.P.R. 445/2000)")
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}")
+        write_line("nato/a a __________ il __________")
+        write_line("residente in __________, via __________ n. ___")
+        write_line("codice fiscale ____________________")
+        write_line("")
+        write_line("CONSAPEVOLE DELLE RESPONSABILITÀ PENALI", bold=True)
+        write_line("in caso di dichiarazioni mendaci, ai sensi dell'art. 76 del D.P.R. 445/2000,")
+        write_line("")
+        write_line("DICHIARA", bold=True)
+        write_line("• di aver diritto al bonus per: ____________________")
+        write_line("• di trovarsi nelle condizioni richieste dalla normativa vigente")
+        write_line("• di non aver presentato altra domanda per lo stesso bonus")
+        write_line("• che i dati sopra riportati corrispondono al vero")
+
+    elif tool_id == 12:
+        write_line("MODELLO ISTANZA PER LA PUBBLICA AMMINISTRAZIONE", bold=True)
+        write_line("")
+        write_line(f"Al/Alla ____________________")
+        write_line(f"del Comune/Ente di ____________________")
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}")
+        write_line("nato/a a __________ il __________")
+        write_line("residente in __________, via __________ n. ___")
+        write_line("")
+        write_line("CHIEDE", bold=True)
+        write_line("__________________________________________________________________")
+        write_line("__________________________________________________________________")
+        write_line("")
+        write_line("A tal fine, ai sensi del D.P.R. 445/2000,")
+        write_line("")
+        write_line("DICHIARA", bold=True)
+        write_line("• ______________________________________________________________")
+        write_line("• ______________________________________________________________")
+        write_line("• ______________________________________________________________")
+
+    elif tool_id == 15:
+        write_line("PORTAFOLIO PROFESSIONALE", bold=True)
+        write_line("")
+        write_line(f"Nome: {nome}")
+        write_line(f"Professione: {professione}")
+        write_line("")
+        write_line("PROGETTI E LAVORI", bold=True)
+        write_line("• Progetto 1: __________________________________________________")
+        write_line("  Descrizione: ________________________________________________")
+        write_line("  Risultati: __________________________________________________")
+        write_line("")
+        write_line("• Progetto 2: __________________________________________________")
+        write_line("  Descrizione: ________________________________________________")
+        write_line("  Risultati: __________________________________________________")
+        write_line("")
+        write_line("• Progetto 3: __________________________________________________")
+        write_line("  Descrizione: ________________________________________________")
+        write_line("  Risultati: __________________________________________________")
+        write_line("")
+        write_line("COMPETENZE E STRUMENTI", bold=True)
+        write_line("• ____________________________________________________________")
+        write_line("• ____________________________________________________________")
+
+    elif tool_id == 16:
+        write_line("DOSSIER PERSONALE", bold=True)
+        write_line("")
+        write_line(f"Nome: {nome}")
+        write_line(f"Data compilazione: _______________")
+        write_line("")
+        write_line("DOCUMENTI ALLEGATI", bold=True)
+        write_line("[ ] Copia documento d'identità")
+        write_line("[ ] Codice fiscale")
+        write_line("[ ] Certificato di residenza")
+        write_line("[ ] Curriculum vitae")
+        write_line("[ ] Titoli di studio / certificazioni")
+        write_line("[ ] Contratti / accordi")
+        write_line("[ ] Certificati medici")
+        write_line("[ ] Documentazione fiscale")
+        write_line("")
+        write_line("NOTE: ________________________________________________________")
+        write_line("______________________________________________________________")
+
+    elif tool_id == 17:
+        write_line("DICHIARAZIONE URGENTE", bold=True)
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}")
+        write_line("nato/a a __________ il __________")
+        write_line("residente in __________, via __________ n. ___")
+        write_line("recapito telefonico: ____________________")
+        write_line("")
+        write_line("IN QUALITÀ DI", bold=True)
+        write_line("[ ] Privato cittadino")
+        write_line("[ ] Testimone")
+        write_line("[ ] Conoscente / parente della persona coinvolta")
+        write_line("")
+        write_line("DICHIARA", bold=True)
+        write_line("che in data __________ alle ore __________")
+        write_line("presso ______________________________________________________")
+        write_line("si è verificato quanto segue:")
+        write_line("__________________________________________________________________")
+        write_line("__________________________________________________________________")
+        write_line("__________________________________________________________________")
+        write_line("")
+        write_line("La presente dichiarazione viene resa per adempiere a quanto richiesto")
+        write_line("dalle autorità competenti.")
+
+    elif tool_id == 18:
+        write_line("DOCUMENTAZIONE PER MATRIMONIO", bold=True)
+        write_line("")
+        write_line("PROCEDURA: [ ] Civile  [ ] Religioso  [ ] Concordatario")
+        write_line("")
+        write_line("DATI DEI CONTRAENTI", bold=True)
+        write_line(f"1. {nome} - nato/a a __________ il __________")
+        write_line("2. ____________________ - nato/a a __________ il __________")
+        write_line("")
+        write_line("DOCUMENTI NECESSARI", bold=True)
+        write_line("[ ] Richiesta pubblicazioni (almeno 8 giorni prima)")
+        write_line("[ ] Documenti d'identità di entrambi")
+        write_line("[ ] Codici fiscali")
+        write_line("[ ] Stato libero / certificato di nascita")
+        write_line("[ ] Atto notorio con 2 testimoni")
+        write_line("[ ] Nulla osta (se straniero)")
+        write_line("[ ] Eventuale sentenza di divorzio")
+        write_line("")
+        write_line("TESTIMONI", bold=True)
+        write_line("1. ____________________ - documento: ____________________")
+        write_line("2. ____________________ - documento: ____________________")
+
+    elif tool_id == 19:
+        write_line("DOCUMENTAZIONE PER NASCITA", bold=True)
+        write_line("")
+        write_line("DATI DEL NEONATO", bold=True)
+        write_line("Nome e cognome: ____________________")
+        write_line("Nato/a il: __________ alle ore: __________")
+        write_line("Presso: ______________________________________________________")
+        write_line("Peso: __________ Altezza: __________")
+        write_line("")
+        write_line("DATI DEI GENITORI", bold=True)
+        write_line(f"Madre: {nome}")
+        write_line("Padre: ____________________")
+        write_line("")
+        write_line("PRATICHE DA COMPLETARE", bold=True)
+        write_line("[ ] Registrazione nascita all'anagrafe (entro 3 giorni)")
+        write_line("[ ] Scelta del nome e dichiarazione allo Stato Civile")
+        write_line("[ ] Richiesta codice fiscale del neonato")
+        write_line("[ ] Iscrizione al medico pediatra")
+        write_line("[ ] Richiesta bonus nascita / assegno unico")
+        write_line("[ ] Pratiche per congedo parentale")
+
+    elif tool_id == 20:
+        write_line("ACCORDO PRELIMINARE DI SEPARAZIONE", bold=True)
+        write_line("")
+        write_line(f"I coniugi: {nome} e ____________________")
+        write_line("")
+        write_line("PREMESSO", bold=True)
+        write_line("che i suddetti hanno contratto matrimonio in data __________")
+        write_line("presso il Comune di ____________________")
+        write_line("")
+        write_line("CONVENGONO", bold=True)
+        write_line("quanto segue in via preliminare:")
+        write_line("")
+        write_line("1. RESIDENZA SEPARATA")
+        write_line("   Il coniuge __________ risiederà in: ____________________")
+        write_line("   Il coniuge __________ risiederà in: ____________________")
+        write_line("")
+        write_line("2. FIGLI (se presenti)")
+        write_line("   Affidamento: [ ] condiviso  [ ] esclusivo a __________")
+        write_line("   Collocazione presso: ____________________")
+        write_line("")
+        write_line("3. MANTENIMENTO")
+        write_line("   Assegno mensile: € __________ a favore di ____________________")
+        write_line("")
+        write_line("Il presente accordo è propedeutico alla procedura di separazione")
+        write_line("consensuale davanti al Tribunale competente.")
+
+    elif tool_id == 21:
+        write_line("MODELLO UNICO PRECOMPILATO", bold=True)
+        write_line("(per Enti della Pubblica Amministrazione)")
+        write_line("")
+        write_line(f"Il/La sottoscritto/a {nome}")
+        write_line("nato/a a __________ il __________")
+        write_line("residente in __________, via __________ n. ___")
+        write_line("CAP ______ Comune __________ Provincia ___")
+        write_line("")
+        write_line("Ai sensi e per gli effetti del D.P.R. 445/2000,")
+        write_line("")
+        write_line("DICHIARA", bold=True)
+        write_line("la sussistenza dei seguenti requisiti e condizioni:")
+        write_line("")
+        write_line("1. ______________________________________________________________")
+        write_line("2. ______________________________________________________________")
+        write_line("3. ______________________________________________________________")
+        write_line("")
+        write_line("Allega: ________________________________________________________")
+        write_line("")
+        write_line("Luogo e data: ____________________")
+        write_line("")
+        write_line("Firma: ____________________")
+
+    c.line(margin, 50, width - margin, 50)
+    c.setFont("Helvetica-Oblique", 9)
+    c.setFillColor(colors.HexColor("#6c757d"))
+    c.drawString(margin, 35, "Documento generato automaticamente da Problem Solver. Verificare i dati prima dell'uso.")
+    c.drawString(margin, 22, "Il presente documento non sostituisce la consulenza di un professionista abilitato.")
+
     c.save()
     return output_path
