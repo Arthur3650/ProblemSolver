@@ -38,9 +38,8 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 STATS_FILE = os.path.join(os.path.dirname(__file__), "stats.json")
 def init_stats():
-    if not os.path.exists(STATS_FILE):
-        with open(STATS_FILE, "w") as f:
-            json.dump({"visits": 0, "uploads": 0, "shares": 0}, f)
+    with open(STATS_FILE, "w") as f:
+        json.dump({"visits": 0, "uploads": 0, "shares": 0}, f)
 init_stats()
 
 app = FastAPI(title="Problem Solver API")
