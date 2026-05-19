@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from services.image_handler import (
     process_passport_photo, censor_photo, restore_old_photo,
     enhance_real_estate, remove_background, upscale_image,
-    social_resize
+    social_resize, compress_image, grayscale_photo, adjust_brightness
 )
 from services.pdf_handler import process_pdf
 from services.doc_generator import generate_document_kit
@@ -78,7 +78,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 DOC_TOOLS = [4, 5, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21]
 
 @app.post("/api/process/{service_id}")
-async def process_file(service_id: int, file: UploadFile = File(None)):
+async def process_file(service_id: int, file: UploadFile = File(None), nome: str = "", professione: str = ""):
     file_id = str(uuid.uuid4())
     input_path = ""
     ext = ".jpg"
@@ -121,11 +121,17 @@ async def process_file(service_id: int, file: UploadFile = File(None)):
             return {"status": "error", "message": "Servizio non più disponibile."}
         elif service_id == 25:
             output_path = social_resize(input_path, OUTPUT_DIR, file_id)
+        elif service_id == 26:
+            output_path = compress_image(input_path, OUTPUT_DIR, file_id)
+        elif service_id == 27:
+            output_path = grayscale_photo(input_path, OUTPUT_DIR, file_id)
+        elif service_id == 28:
+            output_path = adjust_brightness(input_path, OUTPUT_DIR, file_id)
         elif service_id == 3:
             output_path = process_pdf(input_path, OUTPUT_DIR, file_id)
         elif service_id in DOC_TOOLS:
-            mock_data = {"nome": "Cliente Internazionale", "professione": "Manager"}
-            output_path = generate_document_kit(service_id, mock_data, OUTPUT_DIR, file_id)
+            user_data = {"nome": nome or "__________", "professione": professione or "__________"}
+            output_path = generate_document_kit(service_id, user_data, OUTPUT_DIR, file_id)
         elif service_id in [13, 14]:
             return {"status": "error", "message": "Servizio audio/video non ancora disponibile. In arrivo gratis per tutti."}
         else:

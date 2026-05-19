@@ -20,7 +20,10 @@ const services = [
     { id: 21, title: "Compila Moduli PA", desc: "Compila moduli ufficiali della Pubblica Amministrazione.", icon: "📝" },
     { id: 22, title: "Rimuovi Sfondo", desc: "Rimuove lo sfondo dalle foto usando un algoritmo di segmentazione. Utile per e-commerce e grafica.", icon: "✂️" },
     { id: 23, title: "Ingrandisci Foto", desc: "Ridimensiona e migliora la nitidezza di foto piccole o sgranate (2x).", icon: "🔍" },
-    { id: 25, title: "Adatta per Social", desc: "Ridimensiona e adatta foto per formati social (Instagram, TikTok, YouTube).", icon: "📱" }
+    { id: 25, title: "Adatta per Social", desc: "Ridimensiona e adatta foto per formati social (Instagram, TikTok, YouTube).", icon: "📱" },
+    { id: 26, title: "Comprimi Foto", desc: "Riduce il peso delle foto JPEG/PNG mantenendo una qualità accettabile.", icon: "🗜️" },
+    { id: 27, title: "Bianco e Nero", desc: "Converte le foto a colori in bianco e nero.", icon: "⚫" },
+    { id: 28, title: "Luminosità", desc: "Regola luminosità e contrasto delle foto automaticamente.", icon: "☀️" }
 ];
 
 // Track visit
@@ -119,6 +122,11 @@ if (success === 'true' && sessionId && fileIdParam) {
         window.location.href = 'index.html';
     }
 
+    const docTools = [4, 5, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 20, 21];
+    if (docTools.includes(serviceId)) {
+        document.getElementById('docFields').style.display = 'block';
+    }
+
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const uploadArea = document.getElementById('uploadArea');
@@ -171,9 +179,12 @@ if (success === 'true' && sessionId && fileIdParam) {
         }, 300);
 
         try {
-            // Invio reale dei dati al nostro server Python (Backend)
             const formData = new FormData();
             formData.append("file", file);
+            const nomeInput = document.getElementById('nomeInput');
+            const professioneInput = document.getElementById('professioneInput');
+            if (nomeInput && nomeInput.value) formData.append("nome", nomeInput.value);
+            if (professioneInput && professioneInput.value) formData.append("professione", professioneInput.value);
             
             const response = await fetch(`/api/process/${serviceId}`, {
                 method: 'POST',

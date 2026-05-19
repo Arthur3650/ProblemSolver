@@ -162,3 +162,26 @@ def social_resize(input_path, output_dir, file_id):
     out = os.path.join(output_dir, f"{file_id}_social.jpg")
     ImageOps.pad(img, (1080, 1080), color="#0d0e15").convert("RGB").save(out, quality=90)
     return out
+
+def compress_image(input_path, output_dir, file_id):
+    img = Image.open(input_path)
+    out = os.path.join(output_dir, f"{file_id}_compressa.jpg")
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+    img.save(out, quality=40, optimize=True)
+    return out
+
+def grayscale_photo(input_path, output_dir, file_id):
+    img = Image.open(input_path).convert("L").convert("RGB")
+    out = os.path.join(output_dir, f"{file_id}_bn.jpg")
+    img.save(out, quality=90)
+    return out
+
+def adjust_brightness(input_path, output_dir, file_id):
+    img = cv2.imread(input_path)
+    if img is None:
+        return input_path
+    bright = cv2.convertScaleAbs(img, alpha=1.2, beta=20)
+    out = os.path.join(output_dir, f"{file_id}_regolata.jpg")
+    cv2.imwrite(out, bright)
+    return out
